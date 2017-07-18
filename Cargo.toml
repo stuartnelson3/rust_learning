@@ -1,0 +1,7 @@
+[package]
+name = "rust_learning"
+version = "0.1.0"
+authors = ["Stuart Nelson <stuartnelson3@gmail.com>"]
+
+[dependencies]
+prometheus = "0.2"
