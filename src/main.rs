@@ -20,24 +20,38 @@ fn jaro(s1: &str, s2: &str) -> f64 {
     // Not sure if I can just drop l1 and l2 into a slice like that.
     // Might not have to subtract the 1 if we're using 0 indexed string.
     let sl = [l1, l2];
-    let search_length = (sl.iter().max().unwrap() / 2) - 1;
+    // Integer division, not necessary to floor result.
+    let match_range = (sl.iter().max().unwrap() / 2) - 1;
+    print!("match_range {}\n", match_range);
 
-    let m = s1.char_indices().flat_map(|char_idx| {
-        char_match(search_length, z2.clone(), char_idx)
+    let m = s1.char_indices().flat_map(|idx_char| {
+        char_match(match_range, z2.clone(), idx_char)
     });
-    // .flat_map(|(idx, c)| char_match search_length (idx, c));
 
-    return 10.0;
+    10.0
 }
 
-fn char_match(search_length: usize, list: CharIndices, pair: (usize, char)) -> CharIndices {
+fn char_match(match_range: usize, list: CharIndices, pair: (usize, char)) -> CharIndices {
     let (idx, c) = pair;
-    print!("char_match search_length z2 {} {}", idx, c);
-    "hello".char_indices()
+    list.skip(idx - match_range)
+        .take(idx + match_range)
+        .filter(|&idx_char| idx_char.1 == c)
+        .collect()
+}
+
+use std::iter::FromIterator;
+impl FromIterator<(usize, char)> for CharIndices<'static> {
+    fn from_iter<I: IntoIterator<Item = (usize, char)>>(iter: I) -> Self {
+        let mut s = String::new();
+        for (i, c) in iter {
+            s.push(c);
+        }
+        s.char_indices()
+    }
 }
 
 fn main() {
-    let res = jaro("hello", "hello");
+    let res = jaro("hello", "world");
     print!("result: {}", res);
     // let listener = TcpListener::bind("0.0.0.0:5000").unwrap();
     //
