@@ -24,34 +24,41 @@ fn jaro(s1: &str, s2: &str) -> f64 {
     let match_range = (sl.iter().max().unwrap() / 2) - 1;
     print!("match_range {}\n", match_range);
 
-    let m = s1.char_indices().flat_map(|idx_char| {
-        char_match(match_range, z2.clone(), idx_char)
-    });
+    let m: Vec<(usize, char)> = s1.char_indices()
+        .flat_map(|idx_char| char_match(match_range, z2.clone(), idx_char))
+        .collect();
+    let ml = m.len() as f64;
+    let t: f64 = m.iter().map(|&v| transposition(z2.clone(), v) * 0.5).sum();
 
-    10.0
+    print!("char_match {:?}\n", m);
+    let ml1 = ml / (l1 as f64);
+    let ml2 = ml / (l2 as f64);
+    let mtm = (ml - t) / ml;
+
+    match ml {
+        0.0 => 0.0,
+        _ => 0.33 * (ml1 + ml2 + mtm),
+    }
 }
 
-fn char_match(match_range: usize, list: CharIndices, pair: (usize, char)) -> CharIndices {
+fn transposition(list: CharIndices, pair: (usize, char)) -> f64 {
+    let (p, q) = pair;
+    let res: Vec<(usize, char)> = list.filter(|idx_char| p != idx_char.0 && q == idx_char.1)
+        .collect();
+    res.len() as f64
+}
+
+fn char_match(match_range: usize, list: CharIndices, pair: (usize, char)) -> Vec<(usize, char)> {
     let (idx, c) = pair;
-    list.skip(idx - match_range)
+    let skip = idx.checked_sub(match_range).unwrap_or(0);
+    list.skip(skip)
         .take(idx + match_range)
         .filter(|&idx_char| idx_char.1 == c)
         .collect()
 }
 
-use std::iter::FromIterator;
-impl FromIterator<(usize, char)> for CharIndices<'static> {
-    fn from_iter<I: IntoIterator<Item = (usize, char)>>(iter: I) -> Self {
-        let mut s = String::new();
-        for (i, c) in iter {
-            s.push(c);
-        }
-        s.char_indices()
-    }
-}
-
 fn main() {
-    let res = jaro("hello", "world");
+    let res = jaro("bizmarkie", "zibawekj");
     print!("result: {}", res);
     // let listener = TcpListener::bind("0.0.0.0:5000").unwrap();
     //
