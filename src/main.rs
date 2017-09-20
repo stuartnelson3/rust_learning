@@ -39,18 +39,21 @@ fn jaro(s1: &str, s2: &str) -> f64 {
     0.33 * (ml1 + ml2 + mtm)
 }
 
-fn transposition(list: CharIndices, pair: (usize, char)) -> f64 {
-    let (p, q) = pair;
-    let res: Vec<(usize, char)> = list.filter(|&(idx, chr)| p != idx && q == chr).collect();
-    res.len() as f64
+fn transposition(list: CharIndices, (p, q): (usize, char)) -> f64 {
+    list.filter(|&(idx, chr)| p != idx && q == chr)
+        .collect::<Vec<(usize, char)>>()
+        .len() as f64
 }
 
-fn char_match(match_range: usize, list: CharIndices, pair: (usize, char)) -> Vec<(usize, char)> {
-    let (idx, c) = pair;
+fn char_match(
+    match_range: usize,
+    list: CharIndices,
+    (idx, c): (usize, char),
+) -> Vec<(usize, char)> {
     let skip = idx.checked_sub(match_range).unwrap_or(0);
     list.skip(skip)
         .take(idx + match_range)
-        .filter(|&idx_char| idx_char.1 == c)
+        .filter(|&(_, chr)| chr == c)
         .collect()
 }
 
@@ -86,7 +89,6 @@ fn main() {
     let s2 = matches.value_of("s2").unwrap();
     println!("Value for s2: {}", s2);
 
-    // let res = jaro("bizmarkie", "zibawekj");
     let res = jaro(s1, s2);
     print!("result: {}", res);
     // let listener = TcpListener::bind("0.0.0.0:5000").unwrap();
