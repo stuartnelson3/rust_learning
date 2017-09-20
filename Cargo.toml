@@ -5,3 +5,4 @@ authors = ["Stuart Nelson <stuartnelson3@gmail.com>"]
 
 [dependencies]
 prometheus = "0.2"
+clap = "2.26.1"
