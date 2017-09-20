@@ -84,10 +84,7 @@ fn main() {
         .get_matches();
 
     let s1 = matches.value_of("s1").unwrap();
-    println!("Value for s1: {}", s1);
-
     let s2 = matches.value_of("s2").unwrap();
-    println!("Value for s2: {}", s2);
 
     let res = jaro(s1, s2);
     print!("result: {}", res);
